@@ -66,3 +66,17 @@ setInterval(() => {
 setInterval(() => {
   moveObstacles();
 }, 50);
+const leftBtn = document.getElementById("left-btn");
+const rightBtn = document.getElementById("right-btn");
+
+leftBtn.addEventListener("click", () => {
+  playerPos -= 20;
+  if (playerPos < 0) playerPos = 0;
+  player.style.left = playerPos + "px";
+});
+
+rightBtn.addEventListener("click", () => {
+  playerPos += 20;
+  if (playerPos > 260) playerPos = 260;
+  player.style.left = playerPos + "px";
+});

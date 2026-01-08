@@ -36,3 +36,24 @@ body {
   top: -40px;
   border-radius: 5px;
 }
+.controls {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.controls button {
+  font-size: 20px;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  transition: 0.2s;
+}
+
+.controls button:hover {
+  background-color: #0056b3;
+}
