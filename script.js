@@ -1,100 +1,76 @@
-document.addEventListener("DOMContentLoaded", () => {
+const player = document.getElementById("player");
+const gameArea = document.querySelector(".game-area");
+const scoreEl = document.getElementById("score");
 
-  const gameArea = document.getElementById("game-area");
-  const player = document.getElementById("player");
-  const scoreDisplay = document.getElementById("score");
+let playerX = 130;
+let score = 0;
+let gameOver = false;
 
-  const leftBtn = document.getElementById("left-btn");
-  const rightBtn = document.getElementById("right-btn");
-
-  let playerPos = 130;
-  let score = 0;
-  let obstacles = [];
-  let gameOver = false;
-
-  /* ================= PLAYER MOVE ================= */
-  function moveLeft() {
-    if (gameOver) return;
-    playerPos -= 25;
-    if (playerPos < 0) playerPos = 0;
-    player.style.left = playerPos + "px";
+// Move functions
+function moveLeft() {
+  if (playerX > 0) {
+    playerX -= 20;
+    player.style.left = playerX + "px";
   }
+}
 
-  function moveRight() {
-    if (gameOver) return;
-    playerPos += 25;
-    if (playerPos > 260) playerPos = 260;
-    player.style.left = playerPos + "px";
+function moveRight() {
+  if (playerX < 260) {
+    playerX += 20;
+    player.style.left = playerX + "px";
   }
+}
 
-  /* ================= KEYBOARD ================= */
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") moveLeft();
-    if (e.key === "ArrowRight") moveRight();
-  });
-
-  /* ================= MOBILE BUTTONS ================= */
-  leftBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    moveLeft();
-  });
-
-  rightBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    moveRight();
-  });
-
-  leftBtn.addEventListener("click", moveLeft);
-  rightBtn.addEventListener("click", moveRight);
-
-  /* ================= OBSTACLES ================= */
-  function createObstacle() {
-    if (gameOver) return;
-
-    const obs = document.createElement("div");
-    obs.className = "obstacle";
-    obs.style.left = Math.floor(Math.random() * 260) + "px";
-    obs.style.top = "-40px";
-
-    gameArea.appendChild(obs);
-    obstacles.push(obs);
-  }
-
-  function moveObstacles() {
-    if (gameOver) return;
-
-    obstacles.forEach((obs, i) => {
-      let top = parseInt(obs.style.top);
-      top += 6;
-      obs.style.top = top + "px";
-
-      const obsLeft = parseInt(obs.style.left);
-      const obsRight = obsLeft + 40;
-      const playerLeft = playerPos;
-      const playerRight = playerPos + 40;
-
-      if (top + 40 > 430 && top < 500) {
-        if (!(obsRight < playerLeft || obsLeft > playerRight)) {
-          endGame();
-        }
-      }
-
-      if (top > 500) {
-        obs.remove();
-        obstacles.splice(i, 1);
-        score++;
-        scoreDisplay.innerText = score;
-      }
-    });
-  }
-
-  function endGame() {
-    gameOver = true;
-    alert("Game Over 🚗\nScore: " + score);
-    location.reload();
-  }
-
-  setInterval(createObstacle, 1200);
-  setInterval(moveObstacles, 40);
-
+// Keyboard controls
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") moveLeft();
+  if (e.key === "ArrowRight") moveRight();
 });
+
+// Mobile buttons
+document.getElementById("leftBtn").addEventListener("click", moveLeft);
+document.getElementById("rightBtn").addEventListener("click", moveRight);
+
+// Create obstacles
+function createObstacle() {
+  if (gameOver) return;
+
+  const obs = document.createElement("div");
+  obs.className = "obstacle";
+  obs.style.left = Math.floor(Math.random() * 260) + "px";
+  gameArea.appendChild(obs);
+
+  let obsTop = -40;
+
+  const fall = setInterval(() => {
+    if (gameOver) {
+      clearInterval(fall);
+      return;
+    }
+
+    obsTop += 5;
+    obs.style.top = obsTop + "px";
+
+    // Collision
+    if (
+      obsTop > 420 &&
+      obsTop < 480 &&
+      Math.abs(playerX - parseInt(obs.style.left)) < 40
+    ) {
+      alert("Game Over! Score: " + score);
+      gameOver = true;
+      location.reload();
+    }
+
+    // Remove obstacle
+    if (obsTop > 500) {
+      obs.remove();
+      clearInterval(fall);
+      score++;
+      scoreEl.innerText = score;
+    }
+  }, 30);
+}
+
+// Start game
+setInterval(createObstacle, 1500);
